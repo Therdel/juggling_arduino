@@ -1,0 +1,8 @@
+Arduino 33 BLE lessons lörnt:
+- When arduino fails
+	- double-click arduino reset until its LED blinks warm up/down before uploading
+- LEDs:
+	- DL1 Yellow	Pin D13
+	- DL2 Green		GPIO 33
+	- DL3 RGB		GPIO 5,4,43
+
