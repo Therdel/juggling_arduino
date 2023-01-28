@@ -1,5 +1,7 @@
 ## Getting Started
-1. install rust target with ```rustup target add thumbv7em-none-eabi```
+1. install vscode & PlatformIO plugin, then
+2. install rust
+3. install rust target with ```rustup target add thumbv7em-none-eabi```
 
 ## Fixes from cargo pio
 1. set target ```thumbv7em-none-eabi``` in platformio.ini and .cargo/config.toml (rust binary using VFP registers, while pio firmware doesn't)

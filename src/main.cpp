@@ -35,8 +35,8 @@ extern "C" void setup() {
         delay(1000);
         Serial.println("Waiting for 's'...");
     }
-    ble_example();
-    /*
+    // ble_example();
+    // /*
     for(int i=0;i<100;++i)
     Serial.println();
 
@@ -58,13 +58,15 @@ extern "C" void setup() {
             static auto lastCount = 0;
             if(g_highCount > lastCount) {
                 lastCount = g_highCount;
-                Serial.printf("High: %2d times\n", g_highCount);
+                Serial.print("High: ");
+                Serial.print(g_highCount);
+                Serial.println(" times");
             }
 
             g_mutex.unlock(); 
         }
     });
-    */
+    // */
 }
 
 auto toggleLED() {
@@ -133,6 +135,7 @@ auto printAccelerationState(AccelerationState state) {
 
 extern "C" void loop() {
     arduino_loop();
+    // toggleLED();
     // printAccelerationString();
     {
         g_mutex.lock();
@@ -160,7 +163,7 @@ extern "C" void loop() {
 
             toggleLED();
         }
-        //printAccelerationState(state);
+        printAccelerationState(state);
     }
 }
 
