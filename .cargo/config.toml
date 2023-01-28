@@ -1,5 +1,6 @@
 [build]
-target = "thumbv7em-none-eabihf"
+# target = "thumbv7em-none-eabihf"
+target = "thumbv7em-none-eabi"
 
 [unstable]
 build-std = ["core", "panic_abort"]

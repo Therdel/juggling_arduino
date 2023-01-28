@@ -5,10 +5,10 @@
 extern "C" void arduino_setup();
 extern "C" void arduino_loop();
 
-void setup() {
+extern "C" void setup() {
     arduino_setup();
 }
 
-void loop() {
+extern "C" void loop() {
     arduino_loop();
 }
