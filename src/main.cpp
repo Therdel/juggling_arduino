@@ -1,4 +1,3 @@
-#include <sstream>
 #include <memory>
 #include <Arduino.h>
 #include <Arduino_LSM9DS1.h>
@@ -71,29 +70,18 @@ auto toggleLED() {
   lastBlink = !lastBlink;
 }
 
-auto accelerationToString(float x, float y, float z) -> std::string {
-  std::string result;
-  char number[8];
-  sprintf(number, "% .2f |\0", x);
-  result += number;
-  sprintf(number, " % .2f \0", y);
-  result += number;
-  sprintf(number, "| % .2f\0", z);
-  result += number;
-  return result;
-}
-
 auto printAccelerationString() {
   if(IMU.accelerationAvailable()) {
-    static std::stringstream stream;
-    stream.str(std::string{});
-    stream.clear();
-
     float x, y, z;
-    int result = IMU.readAcceleration(x, y, z);
-    stream << accelerationToString(x, y, z);
-
-    Serial.println(stream.str().c_str());
+    if (!IMU.readAcceleration(x, y, z)) {
+      Serial.println("Couldn't read acceleration data (although claimed to be available)");
+    } else {
+      Serial.print(x);
+      Serial.print(" | ");
+      Serial.print(y);
+      Serial.print(" | ");
+      Serial.println(z);
+    }
   }
 }
 
@@ -131,7 +119,8 @@ auto printAccelerationState(AccelerationState state) {
     } else {
       new_state = "LOW";
     }
-    Serial.printf("Accel turned %s\n", new_state);
+    const auto message = std::string("Accel turned ") + new_state;
+    Serial.println(message.c_str());
   }
 }
 
