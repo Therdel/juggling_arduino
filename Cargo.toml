@@ -1,0 +1,11 @@
+[package]
+name = "juggling_arduino"
+edition = "2021"
+version = "0.1.0"
+
+[lib]
+path = "src/lib.rs"
+name = "juggling_arduino"
+edition = "2021"
+crate-type = ["staticlib"]
+required-features = []
