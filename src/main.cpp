@@ -9,8 +9,13 @@
 #include "RgbLed.hpp"
 #include "BLEExample.hpp"
 
-extern "C" void arduino_setup();
-extern "C" void arduino_loop();
+//
+// FFI C -> Rust
+//
+extern "C" {
+    void arduino_setup();
+    void arduino_loop();
+}
 
 rtos::Mutex g_mutex;
 bool g_wokeUp = false;
@@ -79,6 +84,12 @@ auto toggleLED() {
   lastBlink = !lastBlink;
 }
 
+extern "C" void rampLED() {
+    static uint8_t lastBrightness = 0;
+    static RgbLed led;
+    led.setOnNess(lastBrightness++);
+}
+
 auto printAccelerationString() {
   if(IMU.accelerationAvailable()) {
     float x, y, z;
@@ -135,7 +146,6 @@ auto printAccelerationState(AccelerationState state) {
 
 extern "C" void loop() {
     arduino_loop();
-    // toggleLED();
     // printAccelerationString();
     {
         g_mutex.lock();
