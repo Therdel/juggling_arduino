@@ -29,3 +29,20 @@ extern "C" fn arduino_loop() {
 extern "C" {
     fn rampLED();
 }
+// #[allow(non_snake_case)]
+// extern "C" {
+//     fn rampLED();
+//     fn sleepMS(ms: u32);
+//     fn println(msg: *const core::ffi::c_char);
+// }
+
+// extern "C" void sleepMS(uint32_t ms) {
+//     const auto duration = std::chrono::milliseconds(ms);
+//     rtos::ThisThread::sleep_for(duration);
+// }
+
+// extern "C" void println(const char *msg) {
+//     Serial.print(msg);
+//     Serial.print('\n');
+//     // Serial.println(msg);
+// }

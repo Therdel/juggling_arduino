@@ -16,3 +16,7 @@ public:
     auto setG(uint8_t value) -> void;
     auto setB(uint8_t value) -> void;
 };
+
+auto toggleLED() -> void;
+
+extern "C" auto rampLED() -> void;

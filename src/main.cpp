@@ -6,6 +6,7 @@
 #include <Arduino.h>
 #include <Arduino_LSM9DS1.h>
 
+#include "MyLog.hpp"
 #include "RgbLed.hpp"
 #include "BLEExample.hpp"
 
@@ -21,65 +22,44 @@ rtos::Thread g_thread;
 int g_highCount = 0;
 rtos::Mutex g_mutex;
 
+constexpr bool USE_SERIAL = false;
+
 extern "C" void setup() {
     arduino_setup();
-    Serial.begin(9600);
-    while (!Serial) _NOP();
-    Serial.println("Started");
+    MyLog::init(USE_SERIAL);
+    MyLog::log("Started");
 
     pinMode(LED_BUILTIN, OUTPUT);
 
     if (!IMU.begin()) {
-        Serial.println("Failed to initialize IMU!");
+        MyLog::log("Failed to initialize IMU!");
         while (true);
     }
-    while(Serial.read() != 's') {
-        rtos::ThisThread::sleep_for(std::chrono::seconds(1));
-        Serial.println("Waiting for 's'...");
-    }
-    // ble_example();
+    // while(Serial.read() != 's') {
+    //     rtos::ThisThread::sleep_for(std::chrono::seconds(1));
+    //     Serial.println("Waiting for 's'...");
+    // }
+    BLEExample::setup();
 
-    g_thread.start([] {
-        while(true) {
-            rtos::ScopedMutexLock lock(g_mutex);
-            static auto lastCount = 0;
-            if(g_highCount > lastCount) {
-                lastCount = g_highCount;
-                Serial.print("High: ");
-                Serial.print(g_highCount);
-                Serial.println(" times");
-            }
-        }
-    });
-}
-
-auto toggleLED() {
-    static bool lastBlink = false;
-    if (lastBlink) {
-        digitalWrite(LED_BUILTIN, LOW);
-    } else {
-        digitalWrite(LED_BUILTIN, HIGH);
-    }
-    lastBlink = !lastBlink;
-}
-
-extern "C" void rampLED() {
-    static uint8_t lastBrightness = 0;
-    static RgbLed led;
-    led.setOnNess(lastBrightness--);
+    // g_thread.start([] {
+    //     while(true) {
+    //         rtos::ScopedMutexLock lock(g_mutex);
+    //         static auto lastCount = 0;
+    //         if(g_highCount > lastCount) {
+    //             lastCount = g_highCount;
+    //             MyLog::log("High: ", g_highCount, " times");
+    //         }
+    //     }
+    // });
 }
 
 auto printAccelerationString() {
     if (IMU.accelerationAvailable()) {
         float x, y, z;
         if (!IMU.readAcceleration(x, y, z)) {
-            Serial.println("Couldn't read acceleration data (although claimed to be available)");
+            MyLog::log("Couldn't read acceleration data (although claimed to be available)");
         } else {
-            Serial.print(x);
-            Serial.print(" | ");
-            Serial.print(y);
-            Serial.print(" | ");
-            Serial.println(z);
+            MyLog::log(x, " | ", y, " | ", z);
         }
     }
 }
@@ -121,29 +101,30 @@ auto printAccelerationState(AccelerationState state)
             new_state = "LOW";
         }
         const auto message = std::string("Accel turned ") + new_state;
-        Serial.println(message.c_str());
+        MyLog::log(message.c_str());
     }
 }
 
 extern "C" void loop()
 {
-    arduino_loop();
-    // printAccelerationString();
+    BLEExample::loop();
+    // arduino_loop();
+    // // printAccelerationString();
 
-    if (IMU.accelerationAvailable())
-    {
-        float x, y, z;
-        IMU.readAcceleration(x, y, z);
-        float acceleration = static_cast<float>(std::sqrt(sq(x) + sq(y) + sq(z)));
+    // if (IMU.accelerationAvailable())
+    // {
+    //     float x, y, z;
+    //     IMU.readAcceleration(x, y, z);
+    //     float acceleration = static_cast<float>(std::sqrt(sq(x) + sq(y) + sq(z)));
 
-        // Serial.printf("Accel: % .3f\n", acceleration);
-        auto state = accelerationChange(acceleration);
-        if (state == AccelerationState::EdgeHigh) {
-            rtos::ScopedMutexLock lock(g_mutex);
-            ++g_highCount;
+    //     // Serial.printf("Accel: % .3f\n", acceleration);
+    //     auto state = accelerationChange(acceleration);
+    //     if (state == AccelerationState::EdgeHigh) {
+    //         rtos::ScopedMutexLock lock(g_mutex);
+    //         ++g_highCount;
 
-            toggleLED();
-        }
-        // printAccelerationState(state);
-    }
+    //         toggleLED();
+    //     }
+    //     // printAccelerationState(state);
+    // }
 }
